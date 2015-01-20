@@ -2,19 +2,18 @@ package robowarrior.core.Strategies;
 
 import robocode.*;
 
-import java.awt.*;
-
 /**
- * Created by Jens on 16.01.2015.
+ * Created by Jens on 20.01.2015.
  */
-public class Strategy implements BaseStrategy {
+public class StandingStrategy implements BaseStrategy{
 
     AdvancedRobot bot;
-    public Strategy(AdvancedRobot bot) {
-    this.bot=bot;
+    public StandingStrategy(AdvancedRobot bot) {
+
+        this.bot=bot;
     }
 
-
+    @Override
     public void run() {
 
     }
@@ -83,5 +82,4 @@ public class Strategy implements BaseStrategy {
     public void onStatus(StatusEvent event) {
 
     }
-
 }

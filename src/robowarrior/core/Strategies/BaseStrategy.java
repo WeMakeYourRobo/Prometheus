@@ -20,4 +20,5 @@ public interface BaseStrategy{
     public void onWin(WinEvent event);
     public void onRoundEnded(RoundEndedEvent event);
     public void onBattleEnded(BattleEndedEvent event);
+    public void onStatus(StatusEvent event);
 }

@@ -1,15 +1,16 @@
 package robowarrior.core.Bots;
 
 import robocode.*;
+import robowarrior.core.Strategies.BaseStrategy;
 import robowarrior.core.Strategies.Strategy;
 
 /**
  * Created by Jens on 16.01.2015.
  */
 public class BaseRobot extends AdvancedRobot {
-    public Strategy currentStrategy;
+    public BaseStrategy currentStrategy;
 
-    public void setCurrentStrategy(Strategy s){
+    public void setCurrentStrategy(BaseStrategy s){
         this.currentStrategy=s;
     }
 
@@ -76,5 +77,10 @@ public class BaseRobot extends AdvancedRobot {
     @Override
     public void onBattleEnded(BattleEndedEvent event) {
         this.currentStrategy.onBattleEnded(event);
+    }
+
+    @Override
+    public void onStatus(StatusEvent e) {
+        this.currentStrategy.onStatus(e);
     }
 }
