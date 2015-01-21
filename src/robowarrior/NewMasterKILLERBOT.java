@@ -7,6 +7,7 @@ import static robocode.util.Utils.*;
 import robowarrior.core.Bots.EnemyBot;
 import robowarrior.core.Utils.MathUtils; // doch brauch ich >-<
 
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -15,11 +16,12 @@ import java.util.ArrayList;
 
 public class NewMasterKILLERBOT extends AdvancedRobot {
     private ArrayList<EnemyBot> ListOfEnemey = new ArrayList<EnemyBot>();
+    private EnemyBot Opfer = null;
 
     @Override
     public void run() {
-
-
+        setTurnRadarRight(360);
+        setColors(Color.BLACK,Color.PINK,Color.PINK,Color.PINK,Color.PINK);
     }
 
     @Override
@@ -59,7 +61,10 @@ public class NewMasterKILLERBOT extends AdvancedRobot {
 
     @Override
     public void onRobotDeath(RobotDeathEvent event) {
-
+        if(event.getName()==this.Opfer.getName()){
+            this.Opfer=null;
+        }
+        this.ListOfEnemey.remove( this.ListOfEnemey.indexOf( getRobotByName(event.getName())));
     }
 
     @Override
@@ -68,8 +73,12 @@ public class NewMasterKILLERBOT extends AdvancedRobot {
         // 1. Zielen
         //attack(event);
         // nur wenn noch nicht vorhanden
-        if (this.isInList(event.getName())) {
+        if ( !this.isInList(event.getName())) {
             this.ListOfEnemey.add(new EnemyBot(event));
+        }
+        else
+        {
+         ListOfEnemey.get(ListOfEnemey.indexOf(getRobotByName(event.getName()))).update(event);
         }
 
 
@@ -89,22 +98,34 @@ public class NewMasterKILLERBOT extends AdvancedRobot {
     public void onStatus(StatusEvent e) {
         doMove();
         if (getRadarTurnRemaining() == 0) {
-            setTurnRadarRight(360);
+        //
+            double distance=9999999;
+            for (EnemyBot bot : ListOfEnemey) {
+                if (bot.getDistance() < distance) {
+                    distance=bot.getDistance();
+                    this.Opfer=bot;
+                }
+
+            }
+
+            attack();
         }
-        for (EnemyBot bot : ListOfEnemey) {
+
+   /*     for (EnemyBot bot : ListOfEnemey) {
           System.out.print(bot.getName()+" |");
 
         }
         System.out.print("\n");
-
+*/
     }
 
     private void doMove() {
-        setAhead(1);
+        setAhead(100);
+
     }
 
-    private void attack(ScannedRobotEvent event) {
-        double absoluteBearing = getHeading() + event.getBearing();
+    private void attack() {
+        double absoluteBearing = getHeading() + Opfer.getBearing();
         double bearingFromGun = normalRelativeAngleDegrees(absoluteBearing - getGunHeading());
 
 
@@ -119,9 +140,11 @@ public class NewMasterKILLERBOT extends AdvancedRobot {
         }
 
         if (bearingFromGun == 0) {
-            scan();
         }
+        setTurnRadarRight(360);
+
     }
+
 
     private boolean isInList(String robotname) {
 
@@ -133,5 +156,17 @@ public class NewMasterKILLERBOT extends AdvancedRobot {
         }
         return false;
     }
+
+    private EnemyBot getRobotByName(String robotname) {
+        for (EnemyBot bot : ListOfEnemey) {
+            if (bot.getName() == robotname) {
+                return bot;
+            }
+
+        }
+        return null;
+    }
+
+
 
 }
