@@ -68,7 +68,7 @@ public class NewMasterKILLERBOT extends AdvancedRobot {
         // 1. Zielen
         //attack(event);
         // nur wenn noch nicht vorhanden
-        if (this.ListOfEnemey.indexOf(event.getName()) < 0) {
+        if (this.isInList(event.getName())) {
             this.ListOfEnemey.add(new EnemyBot(event));
         }
 
@@ -91,8 +91,12 @@ public class NewMasterKILLERBOT extends AdvancedRobot {
         if (getRadarTurnRemaining() == 0) {
             setTurnRadarRight(360);
         }
+        for (EnemyBot bot : ListOfEnemey) {
+          System.out.print(bot.getName()+" |");
 
-        out.println(ListOfEnemey);
+        }
+        System.out.print("\n");
+
     }
 
     private void doMove() {
