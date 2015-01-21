@@ -15,14 +15,15 @@ import java.util.ArrayList;
 public class GravityBot extends AdvancedRobot {
     private ArrayList<EnemyBot> ListOfEnemey = new ArrayList<EnemyBot>();
     ArrayList<GravityPoint> points=new ArrayList<GravityPoint>();
-    double battlefieldWidth=getBattleFieldWidth();
-    double battlefieldHeight=getBattleFieldHeight();
+
 
     @Override
     public void run() {
-        for(int i=0;i<=5;i++) {
+        double battlefieldWidth=getBattleFieldWidth();
+        double battlefieldHeight=getBattleFieldHeight();
+        for(int i=0;i<=10;i++) {
             double[] coords= MapUtils.randomPoint(0,0,battlefieldWidth,battlefieldHeight);
-            points.add(new GravityPoint("yolo",coords[0],coords[1],i*12));
+            points.add(new GravityPoint("yolo",coords[0],coords[1],i*100));
         }
 
     }
@@ -54,7 +55,7 @@ public class GravityBot extends AdvancedRobot {
 
     @Override
     public void onHitWall(HitWallEvent event) {
-        
+
     }
 
     @Override
@@ -105,6 +106,7 @@ public class GravityBot extends AdvancedRobot {
             xforce += Math.sin(ang) * force;
             yforce += Math.cos(ang) * force;
         }
+        goTo(getX()-xforce,getY()-yforce);
 
     }
     void goTo(double x, double y) {
