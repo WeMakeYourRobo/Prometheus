@@ -22,8 +22,8 @@ public class GravityBot extends AdvancedRobot {
         double battlefieldWidth=getBattleFieldWidth();
         double battlefieldHeight=getBattleFieldHeight();
         for(int i=0;i<=10;i++) {
-            double[] coords= MapUtils.randomPoint(0,0,battlefieldWidth,battlefieldHeight);
-            points.add(new GravityPoint("yolo",coords[0],coords[1],i*100));
+            double[] coords= MapUtils.randomPoint(0,battlefieldWidth,0,battlefieldHeight);
+            points.add(new GravityPoint("yolo",coords[0],coords[1],-1*(Math.random()+1*i+13)));
         }
 
     }
@@ -69,12 +69,12 @@ public class GravityBot extends AdvancedRobot {
         if ( !this.isInList(event.getName())) {
             this.ListOfEnemey.add(new EnemyBot(event));
 
-            points.add(new GravityPoint(event.getName(),coords[0],coords[1],10));
+           points.add(new GravityPoint(event.getName(),coords[0],coords[1],Math.random()+1*event.getEnergy()+13));
         }
         else
         {
 
-            points.get(points.indexOf(getPointByName(event.getName()))).update(coords);
+           points.get(points.indexOf(getPointByName(event.getName()))).update(coords);
         }
     }
 
@@ -98,6 +98,7 @@ public class GravityBot extends AdvancedRobot {
         double xforce=0;
         double yforce=0;
         double ang;
+        setTurnRadarRight(360);
         for(GravityPoint p:points){
             double force=p.power/Math.pow(MathUtils.getDistance(getX(), getY(), p.x, p.y), 2);
             ang =MathUtils.normaliseBearing(Math.PI/2 - Math.atan2(getY() - p.y, getX() - p.x));
@@ -106,6 +107,14 @@ public class GravityBot extends AdvancedRobot {
             xforce += Math.sin(ang) * force;
             yforce += Math.cos(ang) * force;
         }
+        xforce += 5000/Math.pow(MathUtils.getDistance(getX(),
+                getY(), getBattleFieldWidth(), getY()), 3);
+        xforce -= 5000/Math.pow(MathUtils.getDistance(getX(),
+                getY(), 0, getY()), 3);
+        yforce += 5000/Math.pow(MathUtils.getDistance(getX(),
+                getY(), getX(), getBattleFieldHeight()), 3);
+        yforce -= 5000/Math.pow(MathUtils.getDistance(getX(),
+                getY(), getX(), 0), 3);
         goTo(getX()-xforce,getY()-yforce);
 
     }

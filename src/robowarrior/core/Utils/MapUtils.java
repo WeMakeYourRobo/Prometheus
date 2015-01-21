@@ -8,10 +8,10 @@ import java.util.Random;
 public class MapUtils {
 
     static public double[] randomPoint(double minX,double maxX,double minY,double maxY){
-         Random r = new Random();
+
         double[] coords= new double[2] ;
-        coords[0] = minX + (maxX - minX) * r.nextDouble();
-        coords[1] = minY + (maxY - minY) * r.nextDouble();
+        coords[0] = Math.random()*maxX+1;
+        coords[1] =  Math.random()*maxY+1;
         return coords;
     }
 
