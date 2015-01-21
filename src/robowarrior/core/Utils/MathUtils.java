@@ -1,5 +1,7 @@
 package robowarrior.core.Utils;
 
+import robowarrior.core.Bots.EnemyBot;
+
 /**
  * Created by Jens on 16.01.2015.
  */
@@ -31,6 +33,13 @@ public class MathUtils {
         }
 
         return angle;
+    }
+
+    static public double[] getFuturePosition(double x,double y, double heading, EnemyBot bot){
+        double[] coords=null;
+
+
+        return coords;
     }
 
 
