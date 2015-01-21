@@ -15,4 +15,23 @@ public class MapUtils {
         return coords;
     }
 
+    static public double[] getRigthWinkel(double angle, double distance ) {
+        double[] result=new double[2];
+        if (Math.abs(angle) > 90.0) {
+            // wenn der Winkel > 90 Grad, dann fahren wir rückwärts
+            distance *= -1.0;
+            // damit der Turnright funktioniert, verändern wir den winkel ... ?
+            // und ggf. auch negativ ? o.o
+            if (angle > 0.0) {
+                angle -= 180.0;
+            }
+            else {
+                angle += 180.0;
+            }
+        }
+
+        result[0] =angle;
+        result[1] = distance;
+        return result;
+    }
 }

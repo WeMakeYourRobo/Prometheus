@@ -14,7 +14,7 @@ public class MathUtils {
 
         // Calculate the coordinates of the robot
 
-        double[] coord=null;
+        double[] coord= new double[2];
         coord[0] = (selfX + Math.sin(angle) * enemyDistance);
         coord[1] = (selfY + Math.cos(angle) * enemyDistance);
         return coord;
