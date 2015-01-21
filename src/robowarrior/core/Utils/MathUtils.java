@@ -5,22 +5,23 @@ package robowarrior.core.Utils;
  */
 public class MathUtils {
 
-    public double[] getCoords(double enemyBearing,double enemyDistance,double selfHeading,double selfX,double selfY) {
+        static public double[] getCoords(double enemyBearing,double enemyDistance,double selfHeading,double selfX,double selfY) {
         double angleToEnemy = enemyBearing;
         // Calculate the angle to the scanned robot
         double angle = Math.toRadians((selfHeading + angleToEnemy % 360));
 
         // Calculate the coordinates of the robot
+
         double[] coord=null;
         coord[0] = (selfX + Math.sin(angle) * enemyDistance);
         coord[1] = (selfY + Math.cos(angle) * enemyDistance);
         return coord;
     }
 
-    private double getAngleToPoint(double x, double y,double destX,double destY) {
+    static public  double getAngleToPoint(double x, double y,double destX,double destY) {
         //Get heading to the center.
-        double distX = x - destX;
-        double distY = y - destY;
+        double distX =  destX - x;
+        double distY = destY - y;
 
         double angle = Math.atan(distX / distY) * (180.0/Math.PI);
 

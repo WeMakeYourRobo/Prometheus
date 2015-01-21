@@ -15,8 +15,8 @@ public class EnemyBot {
     private double velocity = 0;
     private double[] coords=null;
 
-    public EnemyBot() {
-        reset();
+    public EnemyBot(ScannedRobotEvent e) {
+       update(e);
     }
 
     public double getBearing() {
@@ -56,17 +56,4 @@ public class EnemyBot {
 
     }
 
-    public void reset() {
-        bearing = 0;
-        distance = 0;
-        energy = 0;
-        heading = 0;
-        name = "";
-        velocity = 0;
-        coords=null;
-    }
-
-    public boolean none() {
-        return true;
-    }
 }
