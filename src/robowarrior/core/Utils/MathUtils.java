@@ -34,6 +34,12 @@ public class MathUtils {
 
         return angle;
     }
+    static public double getDistance(double x1,double y1, double x2,double y2) {
+        double x = x2-x1;
+        double y = y2-y1;
+        double range = Math.sqrt(x*x + y*y);
+        return range;
+    }
 
     static public double[] getFuturePosition(double x,double y, double heading, EnemyBot bot){
         double[] coords=null;
@@ -41,6 +47,12 @@ public class MathUtils {
 
         return coords;
     }
-
+   static public double normaliseBearing(double ang) {
+        if (ang > Math.PI)
+            ang -= 2*Math.PI;
+        if (ang < -Math.PI)
+            ang += 2*Math.PI;
+        return ang;
+    }
 
 }
