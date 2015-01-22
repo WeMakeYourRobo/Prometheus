@@ -81,7 +81,7 @@ public class SnakeMoveRobot extends AdvancedRobot {
         // es gab schon Fälle wo meine Koordinate 345,9453835498 war die angeforderte aber 345,9453835361,
         // da diese Stelle unerreichbar ( so kleine schritte konnte ich nicht machen) nun auf ganze integer
 
-        if (myX.intValue() == myZielX.intValue() && myY.intValue() == myZielY.intValue()) {
+        if (getDistanceRemaining()<=0) {
             // Punkt erreicht, neuen Punkt erstellen
             System.out.println("Reach point");
             SetNewPoint();
@@ -139,7 +139,6 @@ public class SnakeMoveRobot extends AdvancedRobot {
         // wenn ich gegen Die Wand fahre, suche ich mir einen neuen punkt
         SetNewPoint();
         goTo();
-        super.onHitWall(event);
     }
 
     @Override
@@ -147,6 +146,5 @@ public class SnakeMoveRobot extends AdvancedRobot {
         // auch gegen Robo fahren, such ich mir ein neuen Punkt
         SetNewPoint();
         goTo();
-        super.onHitRobot(event);
     }
 }
