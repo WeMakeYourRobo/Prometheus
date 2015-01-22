@@ -6,6 +6,8 @@ import robocode.ScannedRobotEvent;
 import robocode.StatusEvent;
 import robowarrior.core.Bots.EnemyBot;
 
+import java.awt.geom.Rectangle2D;
+import java.lang.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 
 import static robocode.util.Utils.normalRelativeAngleDegrees;
@@ -13,10 +15,13 @@ import static robocode.util.Utils.normalRelativeAngleDegrees;
 public class BulletAvoidBot extends AdvancedRobot {
     int movementDirection = 1;
     private EnemyBot Opfer = null;
+    private Rectangle2D rect =new Rectangle2D.Double(0,0,100,100);
 
     public void run() {
         setAdjustRadarForGunTurn(false);
+        rect.setRect(10,10,getBattleFieldWidth()-10,getBattleFieldHeight()-10);
     }
+
 
     @Override
     public void onRobotDeath(RobotDeathEvent event) {
@@ -34,16 +39,22 @@ public class BulletAvoidBot extends AdvancedRobot {
 
         }
 
-
         if (changeInEnergy > 0 && changeInEnergy <= 3) {
+            if(!rect.contains(getX(),getY())){
+                out.println(getX()+" | "+getY());
+                movementDirection = -movementDirection;
+
+            }
             movementDirection = -movementDirection;
-            setAhead((event.getDistance() / 4 + 25) * movementDirection);
+
+            setAhead((event.getDistance() / 4 + 25+(Math.random()*10+4)) * movementDirection);
         }
 
     }
 
     @Override
     public void onStatus(StatusEvent e) {
+
         if (getRadarTurnRemaining() == 0) {
             setTurnRadarRight(360);
         }
@@ -60,7 +71,7 @@ public class BulletAvoidBot extends AdvancedRobot {
                 setTurnGunRight(bearingFromGun);
 
                 if (getGunHeat() == 0) {
-                    setFire(10);
+                    setFire(.1);
                 }
             } else {
                 setTurnGunRight(bearingFromGun);
