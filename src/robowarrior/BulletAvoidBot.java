@@ -1,9 +1,7 @@
 package robowarrior;
 
-import robocode.AdvancedRobot;
-import robocode.RobotDeathEvent;
-import robocode.ScannedRobotEvent;
-import robocode.StatusEvent;
+import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
+import robocode.*;
 import robowarrior.core.Bots.EnemyBot;
 
 import java.awt.*;
@@ -18,14 +16,58 @@ import static robowarrior.core.Utils.MathUtils.getCoords;
 
 public class BulletAvoidBot extends AdvancedRobot {
     int movementDirection = 1;
+    double wallMargin=60;
     private EnemyBot Opfer = null;
     private Rectangle2D rect =new Rectangle2D.Double(0,0,100,100);
 
     public void run() {
         setAdjustRadarForGunTurn(false);
         rect.setRect(10,10,getBattleFieldWidth()-10,getBattleFieldHeight()-10);
+
+        Condition wallHit=new Condition("near_wall") {
+            public boolean test() {
+                return (
+
+                        (getX() <= wallMargin ||
+                                // or we're too close to the right wall
+                                getX() >= getBattleFieldWidth() - wallMargin ||
+                                // or we're too close to the bottom wall
+                                getY() <= wallMargin ||
+                                // or we're too close to the top wall
+                                getY() >= getBattleFieldHeight() - wallMargin)
+                );
+            }
+        };
+
+        wallHit.setPriority(99);
+        addCustomEvent(wallHit);
+
+        Condition enemyHit=new Condition("near_enemy") {
+            public boolean test() {
+                return (
+                    Opfer.getDistance()<=250
+
+                );
+            }
+        };
+
+        wallHit.setPriority(99);
+        addCustomEvent(wallHit);
     }
 
+    @Override
+    public void onCustomEvent(CustomEvent event) {
+        if (event.getCondition().getName().equals("near_wall")) {
+
+            out.println("event fired");
+            goTo(new Point2D.Double(getBattleFieldWidth()/2,getBattleFieldHeight()/2));
+        }
+        if (event.getCondition().getName().equals("near_enemy")) {
+
+            out.println("near enemy fired");
+            goTo(new Point2D.Double(getBattleFieldWidth()/2,getBattleFieldHeight()/2));
+        }
+    }
 
     @Override
     public void onRobotDeath(RobotDeathEvent event) {
@@ -44,23 +86,8 @@ public class BulletAvoidBot extends AdvancedRobot {
         }
 
         if (changeInEnergy > 0 && changeInEnergy <= 3) {
-            if(!rect.contains(getX(),getY())){
-                out.println(getX()+" | "+getY());
-                movementDirection = -movementDirection; nn
 
-            }
-            movementDirection = -movementDirection;
-
-            double Dis = (event.getDistance() / 4 + 25) * movementDirection;
-
-           double[] pos = getCoords(0,Dis,this.getHeading(), getX(), getY());
-
-            if(!rect.contains(pos[0],pos[1])){
-               goTo(new Point2D.Double(getBattleFieldWidth() / 2, getBattleFieldHeight() / 2)) ;
-            }
-            else {
                 setAhead((event.getDistance() / 4 + 25) * movementDirection);
-            }
 
         }
     }
@@ -84,7 +111,13 @@ public class BulletAvoidBot extends AdvancedRobot {
                 setTurnGunRight(bearingFromGun);
 
                 if (getGunHeat() == 0) {
-                    setFire(.1);
+                    double firePower=0;
+                    double maxDistance=Math.pow(getBattleFieldWidth(),2)+Math.pow(getBattleFieldHeight(),2);
+                    if(Opfer.getDistance()<50){
+                        firePower=3.0;
+                    }
+
+                    setFire(firePower);
                 }
             } else {
                 setTurnGunRight(bearingFromGun);
