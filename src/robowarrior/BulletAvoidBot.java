@@ -9,6 +9,7 @@ import robowarrior.core.Bots.EnemyBot;
 import java.util.ArrayList;
 
 import static robocode.util.Utils.normalRelativeAngleDegrees;
+import static robowarrior.core.Utils.MathUtils.getCoords;
 
 public class BulletAvoidBot extends AdvancedRobot {
     int movementDirection = 1;
@@ -37,9 +38,16 @@ public class BulletAvoidBot extends AdvancedRobot {
 
         if (changeInEnergy > 0 && changeInEnergy <= 3) {
             movementDirection = -movementDirection;
-            setAhead((event.getDistance() / 4 + 25) * movementDirection);
-        }
 
+            double Dis = (event.getDistance() / 4 + 25) * movementDirection;
+
+           double[] pos = getCoords(0,Dis,this.getHeading(), getX(), getY());
+
+
+            setAhead((event.getDistance() / 4 + 25) * movementDirection);
+
+
+        }
     }
 
     @Override

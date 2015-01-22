@@ -29,13 +29,13 @@ public class SnakeMoveRobot extends AdvancedRobot {
 
         // Die maxmimale höhe ergibt sich durch das spielfeld, damit ich nicht bis an den rand fahre ( gegen die Mauer)
         // zieh ich noch 10 Punkte ab, funktioniert nur leider nicht zuverlässig...
-        double maxHeight =  getBattleFieldHeight() - 10;
-        double maxWidth = getBattleFieldWidth() - 10 ;
+        double maxHeight =  getBattleFieldHeight() - 100;
+        double maxWidth = getBattleFieldWidth() - 100 ;
 
         // Danach das JAVA FUCKING SCHEISS RANDOM KACK, auch hier die 10 Punkte Minimum damit ich nicht gegne die wand fahr
         // geht auch hier noch nicht ( schau aber noch ... )
-        double y = Math.random() * maxHeight   + 10;
-        double x = Math.random() * maxWidth   + 10;
+        double y = Math.random() * maxHeight   + 100;
+        double x = Math.random() * maxWidth   + 100;
 
         // Alten Punkt löschen und neu belegen.
         this.NextPoint = null;
