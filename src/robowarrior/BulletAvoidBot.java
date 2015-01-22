@@ -3,6 +3,7 @@ package robowarrior;
 import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import robocode.*;
 import robowarrior.core.Bots.EnemyBot;
+import robowarrior.core.Utils.MathUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -103,31 +104,24 @@ public class BulletAvoidBot extends AdvancedRobot {
 
     private void attack() {
         if (Opfer != null) {
+            double[] coords= MathUtils.getCoords(Opfer.getBearing(), Opfer.getDistance(), getHeading(), getX(), getY());
             double absoluteBearing = getHeading() + Opfer.getBearing();
             double bearingFromGun = normalRelativeAngleDegrees(absoluteBearing - getGunHeading());
+            double firePower = Math.min(400 / Opfer.getDistance(), 3);
 
+            double timeToHit=Opfer.getDistance()/firePower;
 
-            if (Math.abs(bearingFromGun) <= 3) {
-                setTurnGunRight(bearingFromGun);
-
-                if (getGunHeat() == 0) {
-                    double firePower=0;
-                    double maxDistance=Math.pow(getBattleFieldWidth(),2)+Math.pow(getBattleFieldHeight(),2);
-                    if(Opfer.getDistance()<50){
-                        firePower=3.0;
-                    }
-
-                    setFire(firePower);
-                }
-            } else {
-                setTurnGunRight(bearingFromGun);
-            }
-
-            if (bearingFromGun == 0) {
+            double enemyTravelDistance=Opfer.getVelocity()*timeToHit;
+            double futureX=coords[0]+ Math.sin(Math.toRadians(Opfer.getHeading()))*enemyTravelDistance;
+            double futureY=coords[0]+ Math.cos(Math.toRadians(Opfer.getHeading()))*enemyTravelDistance;
+                double angle=MathUtils.getAngleToPoint(getX(),getY(),futureX,futureY);
+                setTurnGunRight(Math.toDegrees(angle)-getGunHeading());
+                setFire(firePower);
             }
 
 
-        }
+
+
     }
 
     private void goTo( Point2D NextPoint) {
