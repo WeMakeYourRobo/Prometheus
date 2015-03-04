@@ -73,11 +73,11 @@ public class Predictor extends AdvancedRobot {
         //attack(event);
         // nur wenn noch nicht vorhanden
         if ( !this.isInList(event.getName())) {
-            this.ListOfEnemey.add(new EnemyBot(event));
+            this.ListOfEnemey.add(new EnemyBot(event,this));
         }
         else
         {
-         ListOfEnemey.get(ListOfEnemey.indexOf(getRobotByName(event.getName()))).update(event);
+         ListOfEnemey.get(ListOfEnemey.indexOf(getRobotByName(event.getName()))).update(event,this);
         }
 
 

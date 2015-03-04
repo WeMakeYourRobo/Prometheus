@@ -1,5 +1,6 @@
 package robowarrior.core.Bots;
 
+import robocode.AdvancedRobot;
 import robocode.Robot;
 
 
@@ -13,10 +14,10 @@ public class EnemyBot {
     private double heading = 0;
     private String name = null;
     private double velocity = 0;
-    private double[] coords=null;
+    private double[] coords=new double[2];
 
-    public EnemyBot(ScannedRobotEvent e) {
-       update(e);
+    public EnemyBot(ScannedRobotEvent e, AdvancedRobot me) {
+       update(e,me);
     }
 
     public double getBearing() {
@@ -34,6 +35,13 @@ public class EnemyBot {
     public double getHeading() {
         return heading;
     }
+
+    public double getX() {
+        return coords[0];
+    }
+    public double getY() {
+        return coords[1];
+    }
     public double[] getCoords() {
         return coords;
     }
@@ -46,13 +54,14 @@ public class EnemyBot {
         return velocity;
     }
 
-    public void update(ScannedRobotEvent e) {
+    public void update(ScannedRobotEvent e, AdvancedRobot me) {
         bearing = e.getBearing();
         distance = e.getDistance();
         energy = e.getEnergy();
         heading = e.getHeading();
         name = e.getName();
         velocity = e.getVelocity();
+        coords=MathUtils.getCoords(getBearing(),getDistance(),me.getHeading(),me.getX(),me.getY());
 
     }
 
