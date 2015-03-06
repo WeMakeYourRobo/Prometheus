@@ -1,4 +1,4 @@
-package robowarrior;
+package robowarrior.old;
 
 import robocode.AdvancedRobot;
 import robocode.HitRobotEvent;
