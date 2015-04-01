@@ -1,6 +1,7 @@
 package robowarrior;
 
 import robocode.*;
+import robocode.util.Utils;
 import robowarrior.core.Bots.EnemyBot;
 import robowarrior.core.Bullet;
 import robowarrior.core.EnemyBullet;
@@ -8,13 +9,10 @@ import robowarrior.core.FriendlyBullet;
 import robowarrior.core.Recorder.Film;
 import robowarrior.core.Recorder.Picture;
 import robowarrior.core.Utils.MathUtils;
+import robowarrior.core.Welle;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 
 public class RadarTracker extends AdvancedRobot {
@@ -24,10 +22,13 @@ public class RadarTracker extends AdvancedRobot {
     Film film=new Film();
     Film myFilm=new Film();
     ArrayList<Object> bullets=new ArrayList<Object>();
+
     private EnemyBot Opfer = null;
-    private Rectangle2D rect =new Rectangle2D.Double(0,0,100,100);
     double fieldHeight=0;
     double fieldWidth=0;
+
+    double lastEnemyVelocity=0;
+
 
     public void run() {
         fieldHeight=getBattleFieldHeight();
@@ -39,12 +40,34 @@ public class RadarTracker extends AdvancedRobot {
 
     }
 
-   public void onScannedRobot(ScannedRobotEvent event) {
+    @Override
+    public void onBulletHit(BulletHitEvent event) {
+       Opfer.setEnergy(event.getEnergy());
+    }
+
+    @Override
+    public void onBulletHitBullet(BulletHitBulletEvent event) {
+
+    }
+
+    @Override
+    public void onBulletMissed(BulletMissedEvent event) {
+
+    }
+
+    @Override
+    public void onHitByBullet(HitByBulletEvent event) {
+      //This should never happen
+      // But if then
+      setTurnRadarRightRadians(getHeadingRadians() - event.getBullet().getHeadingRadians());
+    }
+
+    public void onScannedRobot(ScannedRobotEvent event) {
        this.hasEnemy=true;
 
        //Längseite zum Gegner drehen , um besser ausweichen zu können
-       setTurnRight(event.getBearing()+90);
-      // setTurnRadarRight((getHeading() - getRadarHeading() + event.getBearing()));
+       setTurnRightRadians(event.getBearingRadians()+Math.PI/2);
+
        if (Opfer != null) {
            //Energieverlust handeln
            handleEnergyLoss(Opfer,event);
@@ -61,39 +84,16 @@ public class RadarTracker extends AdvancedRobot {
 
     @Override
     public void onBattleEnded(BattleEndedEvent event){
-     //Save Logs
-        PrintStream w = null;
-        try {
-            w = new PrintStream(new RobocodeFileOutputStream(getDataFile("log.dat")));
-
-            for (String line : film.serialize())
-            {
-                out.println(line);
-
-                w.println(line);
-
-            }
-
-            if (w.checkError()) {
-                out.println("I could not write the log!");
-            }
-        } catch (IOException e) {
-            out.println("IOException trying to write: ");
-            e.printStackTrace(out);
-        } finally {
-            if (w != null) {
-                w.close();
-            }
-        }
-
 
     }
 
     @Override
     public void onStatus(StatusEvent e) {
-        makeSelfie();
+            makeSelfie();
         //Scanne
           scanning();
+        // Bewege dich
+        move();
         //Bullets bei jedem Tick updaten
         Graphics2D g= getGraphics();
 
@@ -121,13 +121,36 @@ public class RadarTracker extends AdvancedRobot {
 
 
     }
-
+    private void move(){
+        double xForce=0, yForce= 0;
+        for(int i=0;i< bullets.size() ;i++){
+            Bullet bullet=(Bullet) bullets.get(i);
+            double[] coords=bullet.getCoords();
+            Point2D.Double badPoint= new Point2D.Double(coords[0],coords[1]);
+            double absBearing=Utils.normalAbsoluteAngle(Math.atan2(badPoint.x-getX(),badPoint.y-getY()));
+            double distance=badPoint.distance(getX(),getY());
+            if(distance<=200){
+            xForce -= Math.sin(absBearing) / (distance * distance);
+            yForce -= Math.cos(absBearing) / (distance * distance);
+            }
+        }
+        double angle = Math.atan2(xForce, yForce);
+        if(xForce == 0 && yForce == 0) {
+            // If no force, do nothing
+        } else if(Math.abs(angle-getHeadingRadians())<Math.PI/2){
+            setTurnRightRadians(Utils.normalRelativeAngle(angle-getHeadingRadians()));
+            setAhead(Double.POSITIVE_INFINITY);
+        } else {
+            setTurnRightRadians(Utils.normalRelativeAngle(angle+Math.PI-getHeadingRadians()));
+            setAhead(Double.NEGATIVE_INFINITY);
+        }
+    }
     private void updateBullet(Bullet bullet, Graphics2D g){
         bullet.update();
         double[] xy=bullet.getCoords();
         g.drawRect((int) xy[0] - 3, (int) xy[1] - 3, 6, 6);
         //Lösche Bullet wenn es gelöscht werden soll
-        if (bullet.selfdestroy == true)
+        if (bullet.selfdestroy)
         {
             bullets.remove(bullet);
         }
@@ -155,37 +178,35 @@ public class RadarTracker extends AdvancedRobot {
         double changeInEnergy= Opfer.getEnergy() - event.getEnergy();
         // Wenn Energie gefallen ist ausweichen
         if(changeInEnergy > 0 && changeInEnergy <= 3) {
-            this.bullets.add(new EnemyBullet(event.getBearing(),changeInEnergy,event.getDistance(),fieldWidth,fieldHeight,getX(),getY(),getHeading()));
-            setAhead((event.getDistance() / 8 + 15) * movementDirection);
-            movementDirection=movementDirection*-1;
+            this.bullets.add(new EnemyBullet(event.getBearingRadians(),changeInEnergy,event.getDistance(),fieldWidth,fieldHeight,getX(),getY(),getHeadingRadians()));
+          //  setAhead((event.getDistance() / 8 + 15) * movementDirection);
+          //  movementDirection=movementDirection*-1;
         }
     }
     private void attackEnemy(){
-        double absoluteBearing = getHeading() + Opfer.getBearing();
-        double firePower = Math.min(400 / Opfer.getDistance(), 3);
-
-        double timeToHit=Opfer.getDistance()/firePower;
-        double enemyTravelDistance=Opfer.getVelocity()*timeToHit;
-        double futureX=Opfer.getFutureX(enemyTravelDistance);
-        double futureY=Opfer.getFutureY(enemyTravelDistance);
-        Graphics2D g=getGraphics();
-        g.drawOval((int)futureX,(int)futureY,2,2);
-        double absDeg = MathUtils.absoluteBearing(new Point2D.Double(getX(), getY()), new Point2D.Double(futureX, futureY));
-        double bearingFromGun =MathUtils.normalRelativeAngle(absDeg - getGunHeading());
-        if (Math.abs(bearingFromGun) <= 13) {
-            setTurnGunRight(bearingFromGun);
-
-            if (getGunHeat() == 0) {
-                double firepower= Math.min(400 / Opfer.getDistance(), 3);
-                setFire(firePower);
-                this.bullets.add(new FriendlyBullet(MathUtils.absoluteBearing( new Point2D.Double(Opfer.getX(), Opfer.getY()),new Point2D.Double(getX(), getY())),firepower,0,fieldWidth,fieldHeight,Opfer.getX(),Opfer.getY(), Opfer.getHeading()));
-
-            }
-        } else {
-            setTurnGunRight(bearingFromGun);
+        double enemyAbsoluteBearing = getHeadingRadians() + Opfer.getBearing();
+        double enemyDistance = Opfer.getDistance();
+        double enemyVelocity = Opfer.getVelocity();
+        double lateralDirection = 1;
+        if (enemyVelocity != 0) {
+            lateralDirection = MathUtils.sign(enemyVelocity * Math.sin(Opfer.getHeading() - enemyAbsoluteBearing));
         }
-
+        Welle wave = new Welle(this);
+        wave.gunLocation = new Point2D.Double(getX(), getY());
+        Welle.targetLocation = MathUtils.project(wave.gunLocation, enemyAbsoluteBearing, enemyDistance);
+        wave.lateralDirection = lateralDirection;
+        wave.bulletPower = 3;
+        wave.setSegmentations(enemyDistance, enemyVelocity, lastEnemyVelocity);
+        lastEnemyVelocity = enemyVelocity;
+        wave.bearing = enemyAbsoluteBearing;
+        setTurnGunRightRadians(Utils.normalRelativeAngle(enemyAbsoluteBearing - getGunHeadingRadians() + wave.mostVisitedBearingOffset()));
+        setFire(wave.bulletPower);
+        if (getEnergy() >= wave.bulletPower) {
+            addCustomEvent(wave);
+        }
+        //setTurnRadarRight(Utils.normalRelativeAngle(enemyAbsoluteBearing - getRadarHeading()) * 2);
     }
+
 
     void scanning() {
         double radarOffset;
@@ -194,18 +215,17 @@ public class RadarTracker extends AdvancedRobot {
         } else {
             double absBearing=MathUtils.absoluteBearing(new Point2D.Double(getX(), getY()), new Point2D.Double(Opfer.getX(), Opfer.getY()));
 
-            radarOffset = MathUtils.normalRelativeAngle(getRadarHeading() - absBearing) ;
+            radarOffset = MathUtils.normalRelativeAngle(getRadarHeadingRadians() - absBearing) ;
 
             if (radarOffset < 0) {
-                radarOffset -= 5;
+                radarOffset -= Math.PI/8;
             } else {
-                radarOffset += 5;
+                radarOffset += Math.PI/8;
             }
         }
 
-        setTurnRadarLeft(radarOffset);
+        setTurnRadarLeftRadians(radarOffset);
     }
-
 
 
 

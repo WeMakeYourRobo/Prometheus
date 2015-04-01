@@ -8,6 +8,8 @@ import robocode.ScannedRobotEvent;
 import robowarrior.core.Utils.MathUtils;
 // Speichert EnemyProps und updated sie
 public class EnemyBot {
+
+
     private double bearing = 0;
     private double distance = 0;
     private double energy = 0;
@@ -67,14 +69,42 @@ public class EnemyBot {
         return velocity;
     }
 
+    public void setCoords(double[] coords) {
+        this.coords = coords;
+    }
+
+    public void setVelocity(double velocity) {
+        this.velocity = velocity;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setHeading(double heading) {
+        this.heading = heading;
+    }
+
+    public void setEnergy(double energy) {
+        this.energy = energy;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public void setBearing(double bearing) {
+        this.bearing = bearing;
+    }
+
     public void update(ScannedRobotEvent e, AdvancedRobot me) {
-        bearing = e.getBearing();
+        bearing = e.getBearingRadians();
         distance = e.getDistance();
         energy = e.getEnergy();
-        heading = e.getHeading();
+        heading = e.getHeadingRadians();
         name = e.getName();
         velocity = e.getVelocity();
-        coords = MathUtils.getCoords(getBearing(), getDistance(), me.getHeading(), me.getX(), me.getY());
+        coords = MathUtils.getCoords(getBearing(), getDistance(), me.getHeadingRadians(), me.getX(), me.getY());
 
     }
 
