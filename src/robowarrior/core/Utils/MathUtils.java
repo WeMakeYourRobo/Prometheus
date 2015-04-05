@@ -15,6 +15,9 @@ public class MathUtils {
         return 20 - 3 * power;
     }
 
+    static public double maxEscapeAngle(double power) {
+        return Math.asin(8 / bulletSpeed(power));
+    }
     // Gibt das Vorzeichen einer Zahl zurück
     static public int sign(double v) {
         return v < 0 ? -1 : 1;

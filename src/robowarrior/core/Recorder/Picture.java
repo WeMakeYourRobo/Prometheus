@@ -1,18 +1,12 @@
 package robowarrior.core.Recorder;
 
 /**
- * Created by Jens on 05.03.2015.
+ * @author Jens Laur, Markus Krabbenhöft, Dennis Pries
+ *  Hält die Daten den Gegners zu dem angegeben Zeitpunkt
  */
 
-// Hält die Daten den Gegners zu dem Zeitpunkt
 public class Picture {
-
-
-
     double heading;
-
-
-
     double time;
     double velocity;
     double[] coords;

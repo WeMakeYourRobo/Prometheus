@@ -4,7 +4,9 @@ import robocode.AdvancedRobot;
 import robowarrior.core.Bots.EnemyBot;
 
 /**
- * Created by Jens on 05.03.2015.
+ * @author Jens Laur, Markus Krabbenhöft, Dennis Pries
+ * @version 1.0.0
+ * Wrapper Klasse um zwischen Bullets vom Enemy und von uns unterscheiden zu können
  */
 public class FriendlyBullet extends Bullet{
 

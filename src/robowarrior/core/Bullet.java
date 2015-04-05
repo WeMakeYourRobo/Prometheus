@@ -1,12 +1,17 @@
 package robowarrior.core;
 
-import robocode.*;
 import robowarrior.core.Utils.MathUtils;
 
+
 /**
- * Created by Jens on 23.01.2015.
+ * @author Jens Laur, Markus Krabbenhöft, Dennis Pries
+ * @version 1.0.0
+ *
+ *  Speichert Bullet-Eigenschaften und trackt sie mit, so dass die Position jedes Bullets zu jeder Zeit bekannt ist
+ *  Funtioniert leider nur wenn der Gegner direkt auf uns feuert, wenn nicht, weichen wir zwar Nichts aus, was den Gegner
+ *  aber auch verwirren dürfte
  */
-// Speichert Bullet-Eigenschaften und trackt sie mit, so dass die Position jedes Bullets zu jeder Zeit bekannt ist
+//
 public class Bullet {
 
 
@@ -36,14 +41,14 @@ public class Bullet {
         this.width=w;
         this.height=h;
 
-
-
     }
+
+    // Position und Distanz zum Bullet updaten, und es zum löschen vormerken wenn es das Spielfeld verlassen hat
     public void update(){
         this.distance=firstdistance-(speed*i);
         i++;
         this.coords= MathUtils.getCoords(direction,distance,myHead,myCoords[0],myCoords[1]);
-        // Lösche Flag setzen wenn es ausserhalb des Feldes ist
+        // Löschen Flag setzen wenn es ausserhalb des Feldes ist
         if(coords[0] < 0 || coords[1] < 0 || coords[0] > width || coords[1] > height) {
             selfdestroy = true;
         }

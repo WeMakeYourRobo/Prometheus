@@ -1,12 +1,16 @@
 package robowarrior.core.Bots;
 
 import robocode.AdvancedRobot;
-import robocode.Robot;
-
-
 import robocode.ScannedRobotEvent;
 import robowarrior.core.Utils.MathUtils;
-// Speichert EnemyProps und updated sie
+
+import java.awt.geom.Point2D;
+
+/**
+ * @author Jens Laur, Markus Krabbenhöft, Dennis Pries
+ * @version 1.0.2
+ * Dient als Referenz zu unserem Gegner und hält seine Daten
+ */
 public class EnemyBot {
 
 
@@ -39,7 +43,13 @@ public class EnemyBot {
     }
 
 
-    // Position in n sec
+    /**
+     * Position in n Sekunden
+     * Gibt die Position des Gegener in n Sekunden zurück
+     * @deprecated Nicht mehr benutzt weil GuessFactor Targeting besser ist
+     */
+
+
     public double getFutureX(double time) {
         return coords[0] + Math.sin(Math.toRadians(getHeading())) * getVelocity() * time;
     }

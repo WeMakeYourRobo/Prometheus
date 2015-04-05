@@ -4,9 +4,10 @@ import java.awt.*;
 import java.util.ArrayList;
 
 /**
- * Created by Jens on 05.03.2015.
+ *@author Jens Laur, Markus Krabbenhöft, Dennis Pries
+ *  Hält ein Array von Picture Elementen und führt Operationen darauf aus
  */
-// Hält ein Array von Picture Elementen und führt Operationen darauf aus
+
 public class Film {
 
    public ArrayList<Picture> pictures=new ArrayList<Picture>();
@@ -46,12 +47,5 @@ public class Film {
         }
 
     }
-    public ArrayList<String> serialize(){
-        ArrayList<String> list=new ArrayList<String>();
-        for(Picture i :pictures){
-            list.add(""+i.getX()+","+i.getY()+","+i.getHeading()+","+i.getVelocity()+","+i.getTime());
-        }
-        return list;
 
-    }
 }

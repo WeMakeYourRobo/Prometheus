@@ -3,7 +3,9 @@ package robowarrior.core;
 import robocode.AdvancedRobot;
 
 /**
- * Created by Jens on 05.03.2015.
+ * @author Jens Laur, Markus Krabbenhöft, Dennis Pries
+ * @version 1.0.0
+ * Wrapper Klasse um zwischen Bullets vom Enemy und von uns unterscheiden zu können
  */
 public class EnemyBullet extends Bullet{
 
