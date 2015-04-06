@@ -2,13 +2,13 @@ package robowarrior;
 
 import robocode.*;
 import robocode.util.Utils;
-import robowarrior.core.*;
 import robowarrior.core.Bots.EnemyBot;
 import robowarrior.core.Bullet;
+import robowarrior.core.*;
 import robowarrior.core.Utils.MathUtils;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,44 +19,41 @@ import java.util.Random;
  */
 
 public class Prometheus extends AdvancedRobot {
-    // eine Instanz von Zufall ist immer gut
-    Random R= new Random();
-    // Initial werden wir wohl keinen Gegner haben
-    boolean hasEnemy=false;
-
     // Sollen die Stats in Datei gespeichert und wieder ausgelesen werden?
     // Abgeschaltet da Laden der Datei unperformant und beim Rundensystem nicht brauchbar
     final static boolean USE_SAVING=false;
-    // Unsere Sammlung an Bullets (eigene, sowie auch fremde)
-    ArrayList<Object> bullets=new ArrayList<Object>();
-    // Letzte Velocity des Gegners
-    double lastVelocity=0;
-   // Static damit wir zwischen den Runden speichern
+    // Static damit wir zwischen den Runden speichern
     // 41 -> max ScannerDistanz(1200px) /30=40 also 41 Indieces  ( Distanzen zusammenfassen die eine Differenz von +- 20 haben )
     // 4 -> abs() von PI =3 also 4 Indieces ( wegen radianten )
     // 9 -> max Velocity=8 also 9 Indieces ( jetzige geschwindigkeit )
     // 9 -> max Velocity=8 also 9 Indieces ( alte geschwindigkeit )
     // 31 -> Anzahl der Guess Factors
     static int[][][][][] stats = new int[41][4][9][9][31];
-    static boolean hasLoadedStats=false;
+    static boolean hasLoadedStats = false;
+    // eine Instanz von Zufall ist immer gut
+    Random R = new Random();
+    // Initial werden wir wohl keinen Gegner haben
+    boolean hasEnemy = false;
+    // Unsere Sammlung an Bullets (eigene, sowie auch fremde)
+    ArrayList<Object> bullets=new ArrayList<Object>();
+    // Letzte Velocity des Gegners
+    double lastVelocity=0;
     // Unser Gegner fährt initial immer vorwärts
     int direction = 1;
     // Auch wir fahren initial immer vorwärts
     int movementDirection = 1;
-
-    // Unser Gegner
-    private EnemyBot Opfer = null;
     // Breite und Höhe des Feldes wird man sicherlich mal brauchen
     double fieldHeight=0;
     double fieldWidth=0;
     // Virtuelle Wand
-    Rectangle2D rect;
+    double minAbstand = 100;
+    // Unser Gegner
+    private EnemyBot Opfer = null;
 
     public void run() {
         // Setze Höhe und Breite des Spielfeldes
         fieldHeight = getBattleFieldHeight();
         fieldWidth = getBattleFieldWidth();
-        rect= new Rectangle2D.Double(50,50,getBattleFieldWidth()-50,getBattleFieldHeight()-50);
         // Verhindert, dass sich irgend ein Teil des Roboter abhängig von einem anderen bewegt
         setAdjustRadarForGunTurn(true);
         setAdjustRadarForRobotTurn(true);
@@ -186,6 +183,18 @@ public class Prometheus extends AdvancedRobot {
         // Ein Schuss kann maximal die Energie von 3 haben,
         if(changeInEnergy > 0 && changeInEnergy <= 3) {
             this.bullets.add(new EnemyBullet(event.getBearingRadians(),changeInEnergy,event.getDistance(),fieldWidth,fieldHeight,getX(),getY(),getHeadingRadians()));
+            // Richtung in die wir fahren werden random machen
+            //Naja nur wenn wir nicht nahe der Mauer sind
+            if (getX() <= minAbstand ||
+                    getX() >= getBattleFieldWidth() - minAbstand ||
+                    getY() <= minAbstand ||
+                    getY() >= getBattleFieldHeight() - minAbstand) {
+                movementDirection *= -1;
+            } else {
+                movementDirection = R.nextBoolean() ? 1 : -1;
+            }
+
+
         }
     }
     // Den Gegner angreifen
