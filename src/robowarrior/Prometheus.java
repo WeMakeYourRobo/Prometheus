@@ -5,11 +5,10 @@ import robocode.util.Utils;
 import robowarrior.core.*;
 import robowarrior.core.Bots.EnemyBot;
 import robowarrior.core.Bullet;
-import robowarrior.core.Recorder.Film;
-import robowarrior.core.Recorder.Picture;
 import robowarrior.core.Utils.MathUtils;
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -24,10 +23,7 @@ public class Prometheus extends AdvancedRobot {
     Random R= new Random();
     // Initial werden wir wohl keinen Gegner haben
     boolean hasEnemy=false;
-    // Die beide oskarreifen Streifen von uns und unserem Gegner
-    // Später wird dieser evtl. benutzt um PatternMatching durchzuführen
-    Film film=new Film();
-    Film myFilm=new Film();
+
     // Sollen die Stats in Datei gespeichert und wieder ausgelesen werden?
     // Abgeschaltet da Laden der Datei unperformant und beim Rundensystem nicht brauchbar
     final static boolean USE_SAVING=false;
@@ -53,13 +49,14 @@ public class Prometheus extends AdvancedRobot {
     // Breite und Höhe des Feldes wird man sicherlich mal brauchen
     double fieldHeight=0;
     double fieldWidth=0;
-    // Mindestabstand von Wand
-    double minAbstand=100;
+    // Virtuelle Wand
+    Rectangle2D rect;
 
     public void run() {
         // Setze Höhe und Breite des Spielfeldes
         fieldHeight = getBattleFieldHeight();
         fieldWidth = getBattleFieldWidth();
+        rect= new Rectangle2D.Double(50,50,getBattleFieldWidth()-50,getBattleFieldHeight()-50);
         // Verhindert, dass sich irgend ein Teil des Roboter abhängig von einem anderen bewegt
         setAdjustRadarForGunTurn(true);
         setAdjustRadarForRobotTurn(true);
@@ -88,8 +85,7 @@ public class Prometheus extends AdvancedRobot {
            Opfer = new EnemyBot(event, this);
 
        }
-       //Snapshot des Gegners in den Film aufnehmen
-       takePicture(Opfer);
+
        //Angriff
        attackEnemy();
 
@@ -106,10 +102,8 @@ public class Prometheus extends AdvancedRobot {
 
     @Override
     public void onBattleEnded(BattleEndedEvent event){
-        if(USE_SAVING){
-            FileHandler.writeObject(stats,getDataFile(Opfer.getName()+".rbwarriorlog"));
-        }
-      }
+       FileHandler.writeObject(stats,getDataFile(Opfer.getName()+".rbwarriorlog"));
+    }
 
     @Override
     /**
@@ -117,11 +111,10 @@ public class Prometheus extends AdvancedRobot {
      * Ersetz bei uns die while loop in der run Methode
      */
     public void onStatus(StatusEvent e) {
-        // Mache ein Bild von dir
-          makeSelfie();
+
         //Scanne
           scanning();
-        // Bewege dick
+        // Bewege dich
           move();
         //Bullets bei jedem Tick updaten und wenn aktiviert auf den Screen malen
         Graphics2D g= getGraphics();
@@ -138,11 +131,7 @@ public class Prometheus extends AdvancedRobot {
             }
 
         }
-        // Die Filme auch malen um eventuelle Fehler in unserem Movement sehen zu können
-        g.setColor(new Color(0,255, 57));
-        film.draw(g);
-        g.setColor(new Color(24, 171, 255));
-        myFilm.draw(g);
+
 
 
     }
@@ -151,7 +140,6 @@ public class Prometheus extends AdvancedRobot {
      * Wir gehen durch das Array mit den Bullets, die auf uns abgefeurt worden sind und weichen erst aus wenn wir müssen
      */
     private void move(){
-
         // Ticks, die wir brauchen um zu auszuweichen + 3 Ticks zur Sicherheit
         double movementTicks=(getWidth()/2)+3;
         for (Object object : bullets) {
@@ -181,24 +169,7 @@ public class Prometheus extends AdvancedRobot {
             bullets.remove(bullet);
         }
     }
-    // Foto von uns Selbst zu unserem Film hinzufügen
-    private void makeSelfie(){
-        Picture pic =new Picture(getTime());
-        pic.setHeading(getHeading());
-        pic.setVelocity(getVelocity());
-        pic.setX(getX());
-        pic.setY(getY());
-        myFilm.addPicture(pic);
-    }
-    // Foto von unserem Gegner zu seinem Film hinzufügen
-    private void takePicture(EnemyBot Opfer){
-        Picture pic =new Picture(getTime());
-        pic.setHeading(Opfer.getHeading());
-        pic.setVelocity(Opfer.getVelocity());
-        pic.setX(Opfer.getX());
-        pic.setY(Opfer.getY());
-        film.addPicture(pic);
-    }
+
     // Handelt was passiert wenn die Energie des Gegners gefallen ist
     private void handleEnergyLoss(EnemyBot Opfer,ScannedRobotEvent event){
         double changeInEnergy= Opfer.getEnergy() - event.getEnergy();
@@ -206,18 +177,6 @@ public class Prometheus extends AdvancedRobot {
         // Ein Schuss kann maximal die Energie von 3 haben,
         if(changeInEnergy > 0 && changeInEnergy <= 3) {
             this.bullets.add(new EnemyBullet(event.getBearingRadians(),changeInEnergy,event.getDistance(),fieldWidth,fieldHeight,getX(),getY(),getHeadingRadians()));
-            // Richtung in die wir fahren werden random machen
-            //Naja nur wenn wir nicht nahe der Mauer sind
-            if(getX() <= minAbstand ||
-                    getX() >= getBattleFieldWidth() - minAbstand ||
-                    getY() <= minAbstand ||
-                    getY() >= getBattleFieldHeight() - minAbstand){
-                movementDirection*=-1;
-            } else {
-                movementDirection=R.nextBoolean() ? 1 : -1;
-            }
-
-
         }
     }
     // Den Gegner angreifen
@@ -265,6 +224,8 @@ public class Prometheus extends AdvancedRobot {
             setTurnGunRightRadians(Utils.normalRelativeAngle(absoluteBearing - getGunHeadingRadians() + angleOffset));
         //Feuer
             setFire(power);
+        //Unser Bullet hinzufügen
+            bullets.add(new FriendlyBullet(getGunHeadingRadians(),power,0,fieldWidth,fieldHeight,getX(),getY(),getHeadingRadians()));
 
 
 
