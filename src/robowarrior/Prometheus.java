@@ -71,6 +71,15 @@ public class Prometheus extends AdvancedRobot {
        Opfer.setEnergy(event.getEnergy());
     }
 
+    @Override
+    public void onRobotDeath(RobotDeathEvent event) {
+        //Wenn Gegner tot ist, alles zurücksetzen
+        if(event.getName().equals(Opfer.getName())){
+            hasEnemy=false;
+            Opfer=null;
+        }
+    }
+
     public void onScannedRobot(ScannedRobotEvent event) {
        this.hasEnemy=true;
 
