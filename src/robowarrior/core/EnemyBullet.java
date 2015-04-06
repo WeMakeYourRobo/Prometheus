@@ -1,7 +1,5 @@
 package robowarrior.core;
 
-import robocode.AdvancedRobot;
-
 /**
  * @author Jens Laur, Markus Krabbenhöft, Dennis Pries
  * @version 1.0.0

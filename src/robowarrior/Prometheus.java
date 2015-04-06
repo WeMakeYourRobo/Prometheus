@@ -19,19 +19,19 @@ import java.util.Random;
  */
 
 public class Prometheus extends AdvancedRobot {
-    // eine Instanz von Zufall ist immer gut
-    Random R= new Random();
-    // Initial werden wir wohl keinen Gegner haben
-    boolean hasEnemy=false;
+    // Eine Instanz von Zufall ist immer gut
+    Random R = new Random();
+    // Initial gibt es keine Gegner
+    boolean hasEnemy = false;
 
     // Sollen die Stats in Datei gespeichert und wieder ausgelesen werden?
     // Abgeschaltet da Laden der Datei unperformant und beim Rundensystem nicht brauchbar
-    final static boolean USE_SAVING=false;
+    final static boolean USE_SAVING = false;
     // Unsere Sammlung an Bullets (eigene, sowie auch fremde)
-    ArrayList<Object> bullets=new ArrayList<Object>();
+    ArrayList<Object> bullets = new ArrayList<Object>();
     // Letzte Velocity des Gegners
     double lastVelocity=0;
-   // Static damit wir zwischen den Runden speichern
+    // Static damit wir zwischen den Runden speichern
     // 41 -> max ScannerDistanz(1200px) /30=40 also 41 Indieces  ( Distanzen zusammenfassen die eine Differenz von +- 20 haben )
     // 4 -> abs() von PI =3 also 4 Indieces ( wegen radianten )
     // 9 -> max Velocity=8 also 9 Indieces ( jetzige geschwindigkeit )
@@ -46,7 +46,7 @@ public class Prometheus extends AdvancedRobot {
 
     // Unser Gegner
     private EnemyBot Opfer = null;
-    // Breite und Höhe des Feldes wird man sicherlich mal brauchen
+    // Breite und Höhe des Feldes
     double fieldHeight=0;
     double fieldWidth=0;
     // Virtuelle Wand
@@ -66,7 +66,7 @@ public class Prometheus extends AdvancedRobot {
 
     @Override
     // Setzt die aktuelle Energie des Gegner neu um zu verhindern,
-    // dass wir einem nicht vorhandenen Bullet ausweichen, das wir selbst erschaffen haben
+    // dass wir einer nicht vorhandenen Bullet ausweichen, welche wir selber geschossen haben
     public void onBulletHit(BulletHitEvent event) {
        Opfer.setEnergy(event.getEnergy());
     }
@@ -78,7 +78,7 @@ public class Prometheus extends AdvancedRobot {
        setTurnRightRadians(event.getBearingRadians()+Math.PI/2);
 
        if (Opfer != null) {
-           //Energieverlust handeln
+           //Energieverlust behandeln
            handleEnergyLoss(Opfer,event);
            Opfer.update(event,this);
        } else {
@@ -108,15 +108,15 @@ public class Prometheus extends AdvancedRobot {
     @Override
     /**
      * Wird jeden Tick von Robocode ausgeführt
-     * Ersetz bei uns die while loop in der run Methode
+     * Ersetzt bei uns die while Schleife in der run Methode
      */
     public void onStatus(StatusEvent e) {
 
-        //Scanne
+        // Scanne
           scanning();
         // Bewege dich
           move();
-        //Bullets bei jedem Tick updaten und wenn aktiviert auf den Screen malen
+        // Bullets bei jedem Tick updaten und wenn aktiviert auf den Screen malen
         Graphics2D g= getGraphics();
         for(int i=bullets.size()-1; i> -1; i--){
             Object object=bullets.get(i);

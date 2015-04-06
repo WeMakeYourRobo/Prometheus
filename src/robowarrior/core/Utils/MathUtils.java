@@ -23,7 +23,7 @@ public class MathUtils {
         return v < 0 ? -1 : 1;
     }
 
-    // Get Coords of Enemy
+    // Koordinaten vom Gegner hohlen
     static public double[] getCoords(double enemyBearing, double enemyDistance, double selfHeading, double selfX, double selfY) {
         double angleToEnemy = enemyBearing;
         double angle = selfHeading + angleToEnemy ;
