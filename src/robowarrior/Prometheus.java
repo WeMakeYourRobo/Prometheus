@@ -91,7 +91,7 @@ public class Prometheus extends AdvancedRobot {
 
         if(!hasLoadedStats && hasEnemy && USE_SAVING){
             hasLoadedStats = true;
-            // Wenn wir schonmal gegen diesen Robo gekämpft haben, können wir unsere damaligen Stats verwenden
+            // Wenn wir schonmal gegen diesen Robo gekämpft haben, könnten wir unsere damaligen Stats verwenden
             Object content = FileHandler.readCompressedObject(getDataFile(Opfer.getName() + ".rbwarriorlog"));
             if (content != null) {
                 stats = (int[][][][][]) content;
