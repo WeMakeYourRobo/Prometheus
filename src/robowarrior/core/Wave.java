@@ -10,7 +10,7 @@ import java.awt.geom.Point2D;
 /**
  * @author Jens Laur, Markus Krabbenhöft, Dennis Pries
  * @version 1.0.0
- * Representiert eine Welle
+ * Repräsentiert eine Welle
  */
 public class Wave extends Condition{
 
@@ -26,7 +26,7 @@ public class Wave extends Condition{
     // Variablen die bei jedem onScanned Event geupdated werden
     //Aktuelle Zeit
     public static long now;
-    // Eine Referenz auf unseren Roboter
+    // Eine Referenz auf unseren Robo
     public static AdvancedRobot me;
     // Aktuelle Positin des Gegners
     public static double enemyX;
@@ -58,13 +58,13 @@ public class Wave extends Condition{
      *
      */
     public boolean test(){
-        //Hat das Bullet den Gegner erreicht
+        // Hat das Bullet den Gegner erreicht
         if (Point2D.distance(gunX, gunY, enemyX, enemyY) <= (now - time) * MathUtils.bulletSpeed(power)){
             // Winkel von Gun zum Gegner
             double desiredDirection = Math.atan2(enemyX - gunX, enemyY - gunY);
-            //Offset von gegner winkel und gun winkel
+            // Offset von Gegner Winkel und gun Winkel
             double angleOffset = Utils.normalRelativeAngle(desiredDirection - enemyBearing);
-            //Guess Factor berechnen
+            // Guess Factor berechnen
             // MinMax damit wir bei einer Zahl zwischen 1 und -1 bleiben ansonsten gleiche Formel wie http://robowiki.net/wiki/GuessFactor#Calculation
             double guessFactor = Math.max(-1, Math.min(1, angleOffset / MathUtils.maxEscapeAngle(power))) * direction;
             int index = (int) Math.round((segment.length - 1) / 2 * (guessFactor + 1));

@@ -2,7 +2,6 @@ package robowarrior.core;
 
 import robowarrior.core.Utils.MathUtils;
 
-
 /**
  * @author Jens Laur, Markus Krabbenhöft, Dennis Pries
  * @version 1.0.0
