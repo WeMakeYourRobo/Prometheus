@@ -28,7 +28,7 @@ public class Prometheus extends AdvancedRobot {
     // 9 -> max Velocity=8 also 9 Indieces ( jetzige geschwindigkeit )
     // 9 -> max Velocity=8 also 9 Indieces ( alte geschwindigkeit )
     // 31 -> Anzahl der Guess Factors
-    static int[][][][][] stats = new int[41][4][9][9][31];
+    static int[][][][][] stats = new int[51][4][9][9][31];
     static boolean hasLoadedStats = false;
     // eine Instanz von Zufall ist immer gut
     Random R = new Random();
@@ -221,7 +221,7 @@ public class Prometheus extends AdvancedRobot {
         }
         //Passed by Reference
         // nur die Statistiken wo die Distance
-        int[] currentStats = stats[(int)Opfer.getDistance()/30][(int) Math.abs(Opfer.getBearing())][(int)Math.abs(Opfer.getVelocity())][(int)Math.abs(lastVelocity)];
+        int[] currentStats = stats[(int) Opfer.getDistance() / 24][(int) Math.abs(Opfer.getBearing())][(int) Math.abs(Opfer.getVelocity())][(int) Math.abs(lastVelocity)];
         lastVelocity=Opfer.getVelocity();
         Wave newWave = new Wave(getX(), getY(), absoluteBearing, power, direction, getTime(), currentStats);
         addCustomEvent(newWave);

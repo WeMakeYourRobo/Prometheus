@@ -14,6 +14,7 @@ import robowarrior.core.Utils.MathUtils;
 public class Bullet {
 
 
+    public boolean selfdestroy = false;
     double direction=0;
     double energy=0;
     double speed=0;
@@ -23,7 +24,6 @@ public class Bullet {
     double[] coords=new double[2];
     double[] myCoords=new double[2];
     int i=2;
-    public boolean selfdestroy=false;
     double width;
     double height;
 
@@ -33,7 +33,7 @@ public class Bullet {
         this.speed = robocode.Rules.getBulletSpeed(energy);
         this.firstdistance = distance;
         this.coords= MathUtils.getCoords(direction,firstdistance,heading,x,y);
-        // Unsere Daten speichern, um sie die Position des Bullets neu berechnen zu können
+        // Unsere Daten speichern, um die Position des Bullets neu berechnen zu können
         this.myCoords[0]=x;
         this.myCoords[1]=y;
         this.myHead=heading;
